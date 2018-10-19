@@ -33,6 +33,8 @@ let ball, scoreTextLeft, scoreTextRight;
 let scoreLeft = 0;
 let scoreRight = 0;
 
+let rightBound, leftBound;
+
 let ballPos = new Phaser.Math.Vector2(windowWidth / 2, windowHeight / 2);
 let ballVel = new Phaser.Math.Vector2(-300, 5);
 
@@ -102,6 +104,9 @@ function create()
 
 		this.physics.add.collider(playerLeft, ball);
 		this.physics.add.collider(playerRight, ball);
+        
+        leftBound = 5;
+        rightBound = windowWidth - ball.width - 5;
 }
 
 function update ()
@@ -111,8 +116,7 @@ function update ()
 }
 
 
-let leftBound = 5;
-let rightBound = windowWidth - ball.width - 5;
+
 
 function scoreUpdate()
 {
