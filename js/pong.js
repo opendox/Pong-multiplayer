@@ -1,118 +1,114 @@
-let windowWidth = 1000;
-let windowHeight = 600;
-
-let playerLeft, playerRight;
-let playerSpeed = 50;
-let playerYDrag = 200;
-
-
-let ball, scoreTextLeft, scoreTextRight;
-let scoreLeft = 0;
-let scoreRight = 0;
-
-let ballPos = new Phaser.Math.Vector2(windowWidth / 2, windowHeight / 2);
-let ballVel = new Phaser.Math.Vector2(-300, 5);
-
-// Distance the players are from the edge
-let playerMargin = 100;
-
-// Paddle dimensions
-let playerWidth = 20;
-let playerHeight = 100;
-
-// Spawn Positions
-let playerLeftPos = new Phaser.Math.Vector2
-(
-    playerMargin,
-    windowHeight / 2 - (playerHeight / 2)
-);
-let playerRightPos = new Phaser.Math.Vector2
-(
-    windowWidth - (playerWidth + playerMargin),
-    windowHeight / 2 - (playerHeight / 2)
-);
-
-export let pong = new Phaser.Class(
+class Pong extends Phaser.Scene 
 {
-    Extends: Phaser.Scene,
-    
-    //Starts the scene at the first one
-    initialize: function init()
+    constructor()
     {
-        Phaser.Scene.call(this, {key: 'pong'});
-        console.log('hi');
-    },
-    
-    preload: function()
+        super('pong');
+        this.playerLeft, this.playerRight;
+        this.playerSpeed = 50;
+        this.playerYDrag = 200;
+
+
+        this.ball, this.scoreTextLeft, this.scoreTextRight;
+        this.scoreLeft = 0;
+        this.scoreRight = 0;
+
+        this.ballPos = new Phaser.Math.Vector2(windowWidth / 2, windowHeight / 2);
+        this.ballVel = new Phaser.Math.Vector2(-300, 5);
+
+        // Distance the players are from the edge
+        this.playerMargin = 100;
+
+        // Paddle dimensions
+        this.playerWidth = 20;
+        this.playerHeight = 100;
+
+        this.cursors;
+    }
+
+    preload()
     {
-        
+        // Spawn Positions
+        this.playerLeftPos = new Phaser.Math.Vector2
+        (
+            this.playerMargin,
+            windowHeight / 2 - (this.playerHeight / 2)
+        );
+        this.playerRightPos = new Phaser.Math.Vector2
+        (
+            windowWidth - (this.playerWidth + this.playerMargin),
+            windowHeight / 2 - (this.playerHeight / 2)
+        );
         this.load.image('ball', 'assets/ball.png');
         this.load.image('paddle', 'assets/paddle.png');
-    },
+    }
 
-    create: function create()
+    create()
     {
         //Controls
-        cursors = this.input.keyboard.createCursorKeys();
+        this.cursors = this.input.keyboard.createCursorKeys();
 
         //Display Score
-        scoreTextRight = this.add.text(game.canvas.width-55, 17, ''+scoreRight, { fontSize: '64px', fill: '#ff0044' });
-        scoreTextLeft = this.add.text(17, 17, ''+scoreLeft, { fontSize: '64px', fill: '#ff0044' });
+        this.scoreTextRight = this.add.text(game.canvas.width-55, 17, ''+this.scoreRight, { fontSize: '64px', fill: '#ff0044' });
+        this.scoreTextLeft = this.add.text(17, 17, ''+this.scoreLeft, { fontSize: '64px', fill: '#ff0044' });
         
        //Create ball
-        ball = this.physics.add.sprite(512,512,'ball');
-        ball.body.collideWorldBounds=true;
-        ball.setPosition(ballPos.x, ballPos.y);
-        ball.setVelocity(ballVel.x, ballPos.y);
-        ball.body.bounce.setTo(1, 1);
+        this.ball = this.physics.add.sprite(512,512,'ball');
+        this.ball.body.collideWorldBounds=true;
+        this.ball.setPosition(this.ballPos.x, this.ballPos.y);
+        this.ball.setVelocity(this.ballVel.x, this.ballPos.y);
+        this.ball.body.bounce.setTo(1, 1);
 
         //Player left
-        playerLeft = this.physics.add.sprite(32,96,'paddle');
-        playerLeft.enableBody = true;
-        playerLeft.body.collideWorldBounds = true;
-        playerLeft.body.immovable = true;
+        this.playerLeft = this.physics.add.sprite(32,96,'paddle');
+        this.playerLeft.enableBody = true;
+        this.playerLeft.body.collideWorldBounds = true;
+        this.playerLeft.body.immovable = true;
 
-        playerLeft.body.drag.y = playerYDrag;
-        playerLeft.setPosition(playerLeftPos.x, playerLeftPos.y);
-        playerLeft.setDisplaySize(playerWidth, playerHeight);
+        this.playerLeft.body.drag.y = this.playerYDrag;
+        this.playerLeft.setPosition(this.playerLeftPos.x, this.playerLeftPos.y);
+        this.playerLeft.setDisplaySize(this.playerWidth, this.playerHeight);
 
         // layer right
-        playerRight = this.physics.add.sprite(32,96,'paddle');
-        playerRight.enableBody = true;
-        playerRight.body.collideWorldBounds=true;
-        playerRight.body.immovable = true;
+        this.playerRight = this.physics.add.sprite(32,96,'paddle');
+        this.playerRight.enableBody = true;
+        this.playerRight.body.collideWorldBounds=true;
+        this.playerRight.body.immovable = true;
 
-        playerRight.body.drag.y = playerYDrag;
-        playerRight.setPosition(playerRightPos.x, playerRightPos.y);
-        playerRight.setDisplaySize(playerWidth, playerHeight);
+        this.playerRight.body.drag.y = this.playerYDrag;
+        this.playerRight.setPosition(this.playerRightPos.x, this.playerRightPos.y);
+        this.playerRight.setDisplaySize(this.playerWidth, this.playerHeight);
 
-        this.physics.add.collider(playerLeft, ball);
-        this.physics.add.collider(playerRight, ball);
-    },
+        this.physics.add.collider(this.playerLeft, this.ball);
+        this.physics.add.collider(this.playerRight, this.ball);
+    }
 
-    update: function update ()
+    update()
     {
-        if (ball.body.x < 5)
+        if (this.ball.body.x < 5)
         {
-            scoreRight++;
-            scoreTextRight.setText(''+scoreRight);
-            ball.setPosition(512,512);
+            this.scoreRight++;
+            this.scoreTextRight.setText(''+this.scoreRight);
+            this.ball.setPosition(512,512);
         }
-        else if (ball.body.x > game.canvas.width-ball.width-5)
+        else if (this.ball.body.x > windowWidth-this.ball.width-5)
         {
-            scoreLeft++;
-            scoreTextLeft.setText(''+scoreLeft);
-            ball.setPosition(512,512);
+            this.scoreLeft++;
+            if (this.scoreLeft > 0) 
+            {
+                this.scene.start('lobby');
+            }
+            this.scoreTextLeft.setText(''+this.scoreLeft);
+            this.ball.setPosition(500,300);
         }
             
 
-        if (cursors.up.isDown)
+        if (this.cursors.up.isDown)
         {
-            playerLeft.body.setVelocity(0, playerLeft.body.velocity.y + -1 * playerSpeed);
+            this.playerLeft.body.setVelocity(0, this.playerLeft.body.velocity.y + -1 * this.playerSpeed);
         }
-        if (cursors.down.isDown)
+        if (this.cursors.down.isDown)
         {
-            playerLeft.body.setVelocity(0, playerLeft.body.velocity.y + 1 * playerSpeed);
+            this.playerLeft.body.setVelocity(0, this.playerLeft.body.velocity.y + 1 * this.playerSpeed);
         }
     }
-});
+}
