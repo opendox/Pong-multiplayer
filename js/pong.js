@@ -7,7 +7,6 @@ class Pong extends Phaser.Scene
         this.playerSpeed = 50;
         this.playerYDrag = 200;
 
-
         this.ball, this.scoreTextLeft, this.scoreTextRight;
         this.scoreLeft = 0;
         this.scoreRight = 0;
@@ -48,16 +47,31 @@ class Pong extends Phaser.Scene
         this.cursors = this.input.keyboard.createCursorKeys();
 
         //Display Score
-        this.scoreTextRight = this.add.text(game.canvas.width-55, 17, ''+this.scoreRight, { fontSize: '64px', fill: '#ff0044' });
-        this.scoreTextLeft = this.add.text(17, 17, ''+this.scoreLeft, { fontSize: '64px', fill: '#ff0044' });
+        this.scoreTextRight = this.add.text(game.canvas.width - 55, 17, ''
+        + this.scoreRight, { fontSize: '64px', fill: '#ff0044' });
+        this.scoreTextLeft = this.add.text(17, 17, ''
+        + this.scoreLeft, { fontSize: '64px', fill: '#ff0044' });
         
-       //Create ball
+
+        this.createBall();
+        this.createPlayers();
+
+        this.leftBound = 5;
+        this.rightBound = windowWidth - this.ball.width - 5;
+    }
+    
+    createBall()
+    { 
+        //Create ball
         this.ball = this.physics.add.sprite(512,512,'ball');
         this.ball.body.collideWorldBounds=true;
         this.ball.setPosition(this.ballPos.x, this.ballPos.y);
         this.ball.setVelocity(this.ballVel.x, this.ballPos.y);
         this.ball.body.bounce.setTo(1, 1);
+    }
 
+    createPlayers()
+    { 
         //Player left
         this.playerLeft = this.physics.add.sprite(32,96,'paddle');
         this.playerLeft.enableBody = true;
@@ -68,7 +82,7 @@ class Pong extends Phaser.Scene
         this.playerLeft.setPosition(this.playerLeftPos.x, this.playerLeftPos.y);
         this.playerLeft.setDisplaySize(this.playerWidth, this.playerHeight);
 
-        // layer right
+        // player right
         this.playerRight = this.physics.add.sprite(32,96,'paddle');
         this.playerRight.enableBody = true;
         this.playerRight.body.collideWorldBounds=true;
@@ -83,6 +97,12 @@ class Pong extends Phaser.Scene
     }
 
     update()
+    {
+        this.scoreUpdate();
+        this.playerInput();
+    }
+    
+    scoreUpdate()
     {
         if (this.ball.body.x < 5)
         {
@@ -100,8 +120,10 @@ class Pong extends Phaser.Scene
             this.scoreTextLeft.setText(''+this.scoreLeft);
             this.ball.setPosition(500,300);
         }
-            
-
+    }
+    
+    playerInput()
+    {
         if (this.cursors.up.isDown)
         {
             this.playerLeft.body.setVelocity(0, this.playerLeft.body.velocity.y + -1 * this.playerSpeed);
