@@ -1,39 +1,14 @@
 let windowWidth = 1000;
 let windowHeight = 600;
 
-let config = {
-	type: Phaser.AUTO,
-	width: windowWidth,
-	height: windowHeight,
-	pixelArt: true,
-	physics:
-    {
-		default: 'arcade',
-		arcade:
-        {
-            fps: 60,
-            gravity: { y: 0 }
-        }
-	},
-	scene:
-    {
-		preload: preload,
-		create: create,
-		update: update
-	}
-};
-
 let playerLeft, playerRight;
-
 let playerSpeed = 50;
 let playerYDrag = 200;
 
-let game = new Phaser.Game(config);
+
 let ball, scoreTextLeft, scoreTextRight;
 let scoreLeft = 0;
 let scoreRight = 0;
-
-let rightBound, leftBound;
 
 let ballPos = new Phaser.Math.Vector2(windowWidth / 2, windowHeight / 2);
 let ballVel = new Phaser.Math.Vector2(-300, 5);
@@ -48,100 +23,96 @@ let playerHeight = 100;
 // Spawn Positions
 let playerLeftPos = new Phaser.Math.Vector2
 (
-	playerMargin,
-	windowHeight / 2 - (playerHeight / 2)
+    playerMargin,
+    windowHeight / 2 - (playerHeight / 2)
 );
 let playerRightPos = new Phaser.Math.Vector2
 (
-	windowWidth - (playerWidth + playerMargin),
-	windowHeight / 2 - (playerHeight / 2)
+    windowWidth - (playerWidth + playerMargin),
+    windowHeight / 2 - (playerHeight / 2)
 );
 
-function preload()
+export let pong = new Phaser.Class(
 {
-	this.load.image('ball', 'assets/ball.png');
-	this.load.image('paddle', 'assets/paddle.png');
-}
-
-function create()
-{
-    //Controls
-    cursors = this.input.keyboard.createCursorKeys();
-
-    //Display Score
-    scoreTextRight = this.add.text(game.canvas.width-55, 17, ''
-			+ scoreRight, { fontSize: '64px', fill: '#ff0044' });
-
-		scoreTextLeft = this.add.text(17, 17, ''
-		 	+ scoreLeft, { fontSize: '64px', fill: '#ff0044' });
-
-   	//Create ball
-		ball = this.physics.add.sprite(512,512,'ball');
-  	ball.body.collideWorldBounds=true;
-		ball.setPosition(ballPos.x, ballPos.y);
-    ball.setVelocity(ballVel.x, ballPos.y);
-		ball.body.bounce.setTo(1, 1);
-
-		//Player left
-		playerLeft = this.physics.add.sprite(32,96,'paddle');
-		playerLeft.enableBody = true;
-    playerLeft.body.collideWorldBounds = true;
-		playerLeft.body.immovable = true;
-
-		playerLeft.body.drag.y = playerYDrag;
-		playerLeft.setPosition(playerLeftPos.x, playerLeftPos.y);
-		playerLeft.setDisplaySize(playerWidth, playerHeight);
-
-		// layer right
-		playerRight = this.physics.add.sprite(32,96,'paddle');
-		playerRight.enableBody = true;
-		playerRight.body.collideWorldBounds=true;
-		playerRight.body.immovable = true;
-
-		playerRight.body.drag.y = playerYDrag;
-		playerRight.setPosition(playerRightPos.x, playerRightPos.y);
-		playerRight.setDisplaySize(playerWidth, playerHeight);
-
-		this.physics.add.collider(playerLeft, ball);
-		this.physics.add.collider(playerRight, ball);
+    Extends: Phaser.Scene,
+    
+    //Starts the scene at the first one
+    initialize: function init()
+    {
+        Phaser.Scene.call(this, {key: 'pong'});
+        console.log('hi');
+    },
+    
+    preload: function()
+    {
         
-        leftBound = 5;
-        rightBound = windowWidth - ball.width - 5;
-}
+        this.load.image('ball', 'assets/ball.png');
+        this.load.image('paddle', 'assets/paddle.png');
+    },
 
-function update ()
-{
-  	scoreUpdate();
-		playerInput();
-}
+    create: function create()
+    {
+        //Controls
+        cursors = this.input.keyboard.createCursorKeys();
 
+        //Display Score
+        scoreTextRight = this.add.text(game.canvas.width-55, 17, ''+scoreRight, { fontSize: '64px', fill: '#ff0044' });
+        scoreTextLeft = this.add.text(17, 17, ''+scoreLeft, { fontSize: '64px', fill: '#ff0044' });
+        
+       //Create ball
+        ball = this.physics.add.sprite(512,512,'ball');
+        ball.body.collideWorldBounds=true;
+        ball.setPosition(ballPos.x, ballPos.y);
+        ball.setVelocity(ballVel.x, ballPos.y);
+        ball.body.bounce.setTo(1, 1);
 
+        //Player left
+        playerLeft = this.physics.add.sprite(32,96,'paddle');
+        playerLeft.enableBody = true;
+        playerLeft.body.collideWorldBounds = true;
+        playerLeft.body.immovable = true;
 
+        playerLeft.body.drag.y = playerYDrag;
+        playerLeft.setPosition(playerLeftPos.x, playerLeftPos.y);
+        playerLeft.setDisplaySize(playerWidth, playerHeight);
 
-function scoreUpdate()
-{
-	if (ball.body.x < leftBound)
-	{
-			scoreRight++;
-			scoreTextRight.setText('' + scoreRight);
-			ball.setPosition(ballPos.x, ballPos.y);
-	}
-	else if (ball.body.x > rightBound)
-	{
-			scoreLeft++;
-			scoreTextLeft.setText('' + scoreLeft);
-			ball.setPosition(ballPos.x, ballPos.y);
-	}
-}
+        // layer right
+        playerRight = this.physics.add.sprite(32,96,'paddle');
+        playerRight.enableBody = true;
+        playerRight.body.collideWorldBounds=true;
+        playerRight.body.immovable = true;
 
-function playerInput()
-{
-	if (cursors.up.isDown)
-	{
-			playerLeft.body.setVelocity(0, playerLeft.body.velocity.y + -1 * playerSpeed);
-	}
-	if (cursors.down.isDown)
-	{
-			playerLeft.body.setVelocity(0, playerLeft.body.velocity.y + 1 * playerSpeed);
-	}
-}
+        playerRight.body.drag.y = playerYDrag;
+        playerRight.setPosition(playerRightPos.x, playerRightPos.y);
+        playerRight.setDisplaySize(playerWidth, playerHeight);
+
+        this.physics.add.collider(playerLeft, ball);
+        this.physics.add.collider(playerRight, ball);
+    },
+
+    update: function update ()
+    {
+        if (ball.body.x < 5)
+        {
+            scoreRight++;
+            scoreTextRight.setText(''+scoreRight);
+            ball.setPosition(512,512);
+        }
+        else if (ball.body.x > game.canvas.width-ball.width-5)
+        {
+            scoreLeft++;
+            scoreTextLeft.setText(''+scoreLeft);
+            ball.setPosition(512,512);
+        }
+            
+
+        if (cursors.up.isDown)
+        {
+            playerLeft.body.setVelocity(0, playerLeft.body.velocity.y + -1 * playerSpeed);
+        }
+        if (cursors.down.isDown)
+        {
+            playerLeft.body.setVelocity(0, playerLeft.body.velocity.y + 1 * playerSpeed);
+        }
+    }
+});
