@@ -7,16 +7,16 @@ let config = {
 	height: windowHeight,
 	pixelArt: true,
 	physics:
-    {
+	{
 		default: 'arcade',
 		arcade:
-        {
-            fps: 60,
-            gravity: { y: 0 }
-        }
+		{
+			fps: 60,
+			gravity: { y: 0 }
+		}
 	},
 	scene:
-    {
+	{
 		preload: preload,
 		create: create,
 		update: update
@@ -29,11 +29,11 @@ let playerSpeed = 50;
 let playerYDrag = 200;
 
 let game = new Phaser.Game(config);
-let ball, scoreTextLeft, scoreTextRight;
+let ball, scoreTextLeft, scoreTextRight,
+	rightBound, leftBound;
+
 let scoreLeft = 0;
 let scoreRight = 0;
-
-let rightBound, leftBound;
 
 let ballPos = new Phaser.Math.Vector2(windowWidth / 2, windowHeight / 2);
 let ballVel = new Phaser.Math.Vector2(-300, 5);
@@ -63,74 +63,82 @@ function preload()
 	this.load.image('paddle', 'assets/paddle.png');
 }
 
+let handler;
+
 function create()
 {
-    //Controls
-    cursors = this.input.keyboard.createCursorKeys();
+	//Controls
+	cursors = this.input.keyboard.createCursorKeys();
 
-    //Display Score
-    scoreTextRight = this.add.text(game.canvas.width-55, 17, ''
-			+ scoreRight, { fontSize: '64px', fill: '#ff0044' });
+	//Display Score
+	scoreTextRight = this.add.text(game.canvas.width-55, 17, ''
+	+ scoreRight, { fontSize: '64px', fill: '#ff0044' });
 
-		scoreTextLeft = this.add.text(17, 17, ''
-		 	+ scoreLeft, { fontSize: '64px', fill: '#ff0044' });
+	scoreTextLeft = this.add.text(17, 17, ''
+	+ scoreLeft, { fontSize: '64px', fill: '#ff0044' });
 
-   	//Create ball
-		ball = this.physics.add.sprite(512,512,'ball');
-  	ball.body.collideWorldBounds=true;
-		ball.setPosition(ballPos.x, ballPos.y);
-    ball.setVelocity(ballVel.x, ballPos.y);
-		ball.body.bounce.setTo(1, 1);
+	handler = this;
 
-		//Player left
-		playerLeft = this.physics.add.sprite(32,96,'paddle');
-		playerLeft.enableBody = true;
-    playerLeft.body.collideWorldBounds = true;
-		playerLeft.body.immovable = true;
+	createBall();
+	createPlayers();
 
-		playerLeft.body.drag.y = playerYDrag;
-		playerLeft.setPosition(playerLeftPos.x, playerLeftPos.y);
-		playerLeft.setDisplaySize(playerWidth, playerHeight);
+	leftBound = 5;
+	rightBound = windowWidth - ball.width - 5;
+}
 
-		// layer right
-		playerRight = this.physics.add.sprite(32,96,'paddle');
-		playerRight.enableBody = true;
-		playerRight.body.collideWorldBounds=true;
-		playerRight.body.immovable = true;
+function createBall()
+{
+	//Create ball
+	ball = handler.physics.add.sprite(512,512,'ball');
+	ball.body.collideWorldBounds=true;
+	ball.setPosition(ballPos.x, ballPos.y);
+	ball.setVelocity(ballVel.x, ballPos.y);
+	ball.body.bounce.setTo(1, 1);
+}
 
-		playerRight.body.drag.y = playerYDrag;
-		playerRight.setPosition(playerRightPos.x, playerRightPos.y);
-		playerRight.setDisplaySize(playerWidth, playerHeight);
+function createPlayers()
+{
+	//Player left
+	playerLeft = handler.physics.add.sprite(32,96,'paddle');
+	playerLeft.enableBody = true;
+	playerLeft.body.collideWorldBounds = true;
+	playerLeft.body.immovable = true;
+	playerLeft.body.drag.y = playerYDrag;
+	playerLeft.setPosition(playerLeftPos.x, playerLeftPos.y);
+	playerLeft.setDisplaySize(playerWidth, playerHeight);
 
-		this.physics.add.collider(playerLeft, ball);
-		this.physics.add.collider(playerRight, ball);
-        
-        leftBound = 5;
-        rightBound = windowWidth - ball.width - 5;
+	// layer right
+	playerRight = handler.physics.add.sprite(32,96,'paddle');
+	playerRight.enableBody = true;
+	playerRight.body.collideWorldBounds=true;
+	playerRight.body.immovable = true;
+	playerRight.body.drag.y = playerYDrag;
+	playerRight.setPosition(playerRightPos.x, playerRightPos.y);
+	playerRight.setDisplaySize(playerWidth, playerHeight);
+
+	handler.physics.add.collider(playerLeft, ball);
+	handler.physics.add.collider(playerRight, ball);
 }
 
 function update ()
 {
-  	scoreUpdate();
-		playerInput();
+	scoreUpdate();
+	playerInput();
 }
-
-
-
 
 function scoreUpdate()
 {
 	if (ball.body.x < leftBound)
 	{
-			scoreRight++;
-			scoreTextRight.setText('' + scoreRight);
-			ball.setPosition(ballPos.x, ballPos.y);
+		scoreRight++;
+		scoreTextRight.setText('' + scoreRight);
+		ball.setPosition(ballPos.x, ballPos.y);
 	}
 	else if (ball.body.x > rightBound)
 	{
-			scoreLeft++;
-			scoreTextLeft.setText('' + scoreLeft);
-			ball.setPosition(ballPos.x, ballPos.y);
+		scoreLeft++;
+		scoreTextLeft.setText('' + scoreLeft);
+		ball.setPosition(ballPos.x, ballPos.y);
 	}
 }
 
@@ -138,10 +146,10 @@ function playerInput()
 {
 	if (cursors.up.isDown)
 	{
-			playerLeft.body.setVelocity(0, playerLeft.body.velocity.y + -1 * playerSpeed);
+		playerLeft.body.setVelocity(0, playerLeft.body.velocity.y + -1 * playerSpeed);
 	}
 	if (cursors.down.isDown)
 	{
-			playerLeft.body.setVelocity(0, playerLeft.body.velocity.y + 1 * playerSpeed);
+		playerLeft.body.setVelocity(0, playerLeft.body.velocity.y + 1 * playerSpeed);
 	}
 }
