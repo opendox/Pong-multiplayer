@@ -18,6 +18,11 @@ class Lobby extends Phaser.Scene
 		this.newRoomBtn = utils.add.button(this,200,100,'Create Room',fontstyle);
 		this.joinRoomBtn = utils.add.button(this,600,100,'Join Room',fontstyle);
 		
+		this.newRoomBtn.first.on('pointerdown', () => 
+		{
+			setTimeout(() => {this.scene.start('pong')},100);
+		});
+		
     }
 	update ()
     {
