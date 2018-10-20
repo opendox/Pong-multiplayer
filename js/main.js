@@ -5,6 +5,7 @@ let config = {
     type: Phaser.AUTO,
     width: windowWidth,
     height: windowHeight,
+	backgroundColor: '#0ff0ff',
     pixelArt: true,
     physics:
     {

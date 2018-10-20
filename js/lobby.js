@@ -8,14 +8,21 @@ class Lobby extends Phaser.Scene
     preload ()
     {
         //load User Interface
+		this.load.spritesheet('button', 'assets/button.png',
+		{frameWidth: 256, frameHeight: 64});
     }
 
     create ()
     {
-        this.add.text(200, 17, 'AddLobbyHere', { fontSize: '64px', fill: '#ff0044' });
-        setTimeout(() =>
-        {
-            this.scene.start('pong');
-        }, 3000, this);
+		let fontstyle = {size: 32, style: 'bold', font: 'Arial', color: '#ff0000', bg: undefined}; 
+		this.newRoomBtn = utils.add.button(this,200,100,'Create Room',fontstyle);
+		this.joinRoomBtn = utils.add.button(this,600,100,'Join Room',fontstyle);
+		
     }
+	update ()
+    {
+            
+		//start game pong with: this.scene.start('pong');
+    }
+	
 }
